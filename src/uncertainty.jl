@@ -1,15 +1,16 @@
 export 	quad_beta,
 		buildBetaMixtureDensity,
 		constructBasis,
-		sampleFromBiMixture
+		sampleFromBiMixture,
+		verifyBasis
 
 """
 	quad_beta(N::Int, α::Real, β::Real, w::Real)
 returns ``N``-point quadrature for Beta distribution with shape parameters α, β, multiplied times w. 
 """
 function quad_beta(N::Int, α::Real, β::Real, w::Real)
-    op = Beta01OrthoPoly(N, α, β)
-    op.quad.nodes[1:N], w*op.quad.weights[1:N]
+    op = Beta01OrthoPoly(N, α, β; addQuadrature=true)
+    op.quad.nodes, w*op.quad.weights
 end
 
 """
@@ -24,13 +25,21 @@ function buildBetaMixtureDensity(α::Vector, β::Vector, w::Vector)
     t -> sum( w_*PolyChaos.w_beta(t,α_,β_) for (α_, β_, w_) in zip(α, β, w) )
 end
 
+function verifyBasis(opq::AbstractOrthoPoly)
+	deg, meas, ρ = opq.deg, opq.measure, opq.measure.w
+	T2 = Tensor(2, opq)
+	T2num_1 = [ T2.get([i,j]) for i in 0:deg, j in 0:deg]
+	@show T2num_2 = [quadgk(x -> evaluate(i,x,opq)*evaluate(j,x,opq)*ρ(x),meas.dom[1],meas.dom[2])[1] for i in 0:deg, j in 0:deg ]
+	T2num_2 - T2num_1
+end
+
 """
 	constructBasis(deg::Int, α::Vector, β::Vector, w::Vector)
 construct orthogonal basis for Beta mixture model
 """
 function constructBasis(deg::Int, α::Vector, β::Vector, w::Vector; Nrec::Int=2*deg)
 	measure = Measure("MyMixture_Measure", buildBetaMixtureDensity(α,β,w), (0,1), false, Dict(:α=>α,:β=>β,:w=>w))
-	a, b = mcdiscretization(Nrec, [n -> quad_beta(n, α[1], β[1], w[1]); n -> quad_beta(n, α[2], β[2], w[2])], gaussquad=true, discretization=stieltjes, Nmax=10000, ε=1e-4)
+	a, b = mcdiscretization(Nrec, [n -> quad_beta(n, α[1], β[1], w[1]); n -> quad_beta(n, α[2], β[2], w[2])], gaussquad=true, Nmax=10000, ε=1e-4)
 	OrthoPoly("MyMixtureOrthoPoly", deg, a, b, measure)
 end
 

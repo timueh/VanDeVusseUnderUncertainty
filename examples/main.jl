@@ -1,5 +1,5 @@
 using 	OptimalControlUnderUncertainty, JuMP, PolyChaos, LinearAlgebra,
-		Ipopt, Distributions
+		Ipopt, Distributions, QuadGK
 
 degree = 4
 α, β, w = [2, 4], [4.5, 1.5], [0.3, 0.7]
