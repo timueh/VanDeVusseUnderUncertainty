@@ -1,4 +1,4 @@
-using 	OptimalControlUnderUncertainty, JuMP, PolyChaos, LinearAlgebra,
+using 	VanDeVusseUnderUncertainty, JuMP, PolyChaos, LinearAlgebra,
 		Ipopt, Distributions, QuadGK
 
 degree = 4

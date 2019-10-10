@@ -7,7 +7,7 @@ function createOptimizationProblem(sys::LTISystem, cost::Cost, unc::Uncertainty,
 
 	T2, T3 = unc.T2, unc.T3
 	tensor = _buildTensorFun(unc)
-	L = OptimalControlUnderUncertainty.dim(unc)
+	L = VanDeVusseUnderUncertainty.dim(unc)
 
 	model = Model(with_optimizer(Ipopt.Optimizer))
 	@variable(model, x[1:nx, 1:T+1, 1:L])

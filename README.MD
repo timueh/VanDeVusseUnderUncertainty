@@ -2,10 +2,10 @@
 
 *This package is work in progress*
 
-Given a discrete-time linear time-invariant system subject to parametric uncertainties, this code uses polynomial chaos expansion to compute optimal input trajectories such that the expected quadratic cost is minimized subject to individual chance constraints.
+This package studies a Van de Vusse reactor under uncertainty. There are two main examples:
+- `IFAC_example_propagation.jl` which propagates uncertainties through the system, and
+- `IFAC_example_optimization.jl` which solves an optimal control problem under uncertainty.
 
-The example is a linearized van-de-Vusse reactor.
+The equations are based on [this paper](https://ieeexplore.ieee.org/abstract/document/7170854/).
 
-We consider three distinct sources of uncertainty:
-    - the reaction rate is modelled as a Beta mixture model, and
-    - the initial condition for each concentratio is uncertain.
+All uncertainties are modeled as continuous random variables of finite variance. Polynomial chaos expansion is employed to propagate uncertainties. We make use of the Julia package [`PolyChaos.jl`](https://github.com/timueh/PolyChaos.jl).

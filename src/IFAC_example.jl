@@ -1,30 +1,3 @@
-using JuMP, PolyChaos, LinearAlgebra, Ipopt, Distributions
-
-
-
-function getSolution(x::Matrix, op::AbstractOrthoPoly)
-	mu  = [ mean(Vector(row), op) for row in eachrow(x) ]
-	sig = [ std(Vector(row), op) for row in eachrow(x) ]
-	mu, sig
-end
-
-function sampleFromBiMixture(N::Int, α::Vector, β::Vector, w::Vector)
-	# check inputs
-    length(w) != 2 && throw(DomainError(length(w), "method works for bi-variate mixtures only"))
-    !(length(α) == length(β) == length(w)) && throw(DomainError((length(α), length(β), length(w)), "inconsistent lengths"))
-    sum(w) != 1 && throw(DomainError(sum(w),"weights do not sum to one"))
-    minimum(w) < 0 && throw(DomainError(minimum(w),"weights must be non-negative"))
-    # begin sampling
-    betas = [ Beta(a,b)  for (a,b) in zip(α,β) ]
-    betaSamples = [ rand(beta, N) for beta in betas ]
-    uniSamples = rand(N)
-    mixtureSamples = Float64[]
-    for n in 1:N
-        ind = rand() < first(w) ? 1 : 2
-        push!(mixtureSamples, betaSamples[ind][n])
-    end
-    mixtureSamples
-end
 
 
 
