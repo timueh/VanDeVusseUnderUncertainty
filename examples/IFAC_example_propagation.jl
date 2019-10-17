@@ -18,13 +18,14 @@ k0 = 1e9*[12.87; 12.87; 9.043]
 T0 = 104.9
 E = [9758.3; 9758.3; 8560]
 k_rate = @. k0 * exp(-E/(T0 + 273.15))
+k_rate = [50; 100; 10 ] # Constrained Linear Quadratic Regulation, Pierre O. M. Scokaert and James B. Rawlings
 # initial condition
 c0 = [0.5; 0.1]
-tend, Δt = 15.0, 0.01
+tend, Δt = 0.1, 0.001
 
 
 prob = ODEProblem(ODEdeterministic, c0, (0, tend), (k_rate, 0.1))
-sol = solve(prob; saveat=0:Δt:tend);
+sol = DifferentialEquations.solve(prob; saveat=0:Δt:tend);
 
 # uncertainty propagation
 degree = 4
@@ -40,7 +41,7 @@ e = zeros(L)
 e[1] = 1
 
 probGalerkin = ODEProblem(ODEgalerkin, kron(c0,e), (0, tend), 0.1)
-sol = solve(probGalerkin; saveat=0:Δt:tend)
+sol = DifferentialEquations.solve(probGalerkin; saveat=0:Δt:tend)
 
 t_x = sol.t
 
@@ -59,9 +60,10 @@ end
 deterministic_solutions = solveSystemForRealizations(ODEProblemFunction, k1_samples, k2_samples, 0:Δt:tend)
 
 
-width, height = 3, 2 # in inches!
+width, height = 1.7, 1.5 # in inches!
 close("all")
 PyPlot.rc("text", usetex=true)
+PyPlot.rc("font", size=9)
 fig1 = figure(1, frameon=true, tight_layout=true, figsize=(width, height))
 # fig1.tight_layout()
 PyPlot.grid(true)
@@ -69,7 +71,7 @@ fill_between(t_x, μ1 + 3*σ1, μ1 - 3*σ1, alpha=0.1, color="k", edgecolor="k")
 [ plot(t_x, x1sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ1)
 xlabel(L"t"); ylabel(L"c_{A,1}(t)")
-savefig("propagation_x1.svg", format="svg")
+savefig("/home/ws/oz8348/ifac_polychaospaper/propagation_x1.pdf", format="pdf")
 
 fig2 = figure(2, frameon=true, tight_layout=true, figsize=(width, height))
 PyPlot.grid(true)
@@ -78,6 +80,4 @@ fill_between(t_x, μ2 + 3*σ2, μ2 - 3*σ2, alpha=0.1, color="k", edgecolor="k")
 [ plot(t_x, x2sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ2)
 xlabel(L"t"); ylabel(L"c_{B,1}(t)")
-savefig("propagation_x2.svg", format="svg")
-
-
+savefig("/home/ws/oz8348/ifac_polychaospaper/propagation_x2.pdf", format="pdf")

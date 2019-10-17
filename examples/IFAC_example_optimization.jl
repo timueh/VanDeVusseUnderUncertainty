@@ -9,7 +9,7 @@ op_x1 = GaussOrthoPoly(degree; Nrec=2*degree)
 op_x2 = GaussOrthoPoly(degree; Nrec=2*degree)
 mop = MultiOrthoPoly([op_k, op_x1, op_x2], degree)
 unc = Uncertainty(mop)
-L = OptimalControlUnderUncertainty.dim(unc)
+L = VanDeVusseUnderUncertainty.dim(unc)
 lb, ub = 0.923, 0.963
 
 δ, T = 0.002, 0.2
@@ -24,7 +24,7 @@ B = zeros(nx, nu, L)
 B[:,:,1] = [ -0.005; -0.002 ]
 
 x0 = zeros(nx, L)
-x0[1,[1,3]] = convert2affinePCE(0.5, 0.1/3*0.5, op_x1) 
+x0[1,[1,3]] = convert2affinePCE(0.5, 0.1/3*0.5, op_x1)
 x0[2,[1,4]] = convert2affinePCE(0.1, 0.1/3*0.1, op_x2)
 
 sys = LTISystem(A,B,x0,δ)
@@ -49,27 +49,4 @@ x0_realizations = [ Vector(col) for col in eachcol(x0_samples) ]
 sols = solveSystemForRealizations(A_realizations, B_realizations, x0_realizations, usol, N)
 
 ##
-using PyPlot, LaTeXStrings
-t_x, t_u = 0:δ:T, 0:δ:T-δ
-close("all")
-subplot(2,2,1)
-grid(true)
-fill_between(t_x, μ1 + 3*σ1, μ1 - 3*σ1, alpha=0.1, color="k", edgecolor="k")
-plot(t_x, μ1)
-[ plot(t_x, x1sol, "--") for (x1sol, x2sol) in sols]
-xlabel(L"t"); ylabel(L"x_1(t)")
-subplot(2,2,2)
-grid(true)
-xlabel(L"t"); ylabel(L"x_2(t)")
-fill_between(t_x, μ2 + 3*σ2, μ2 - 3*σ2, alpha=0.1, color="k", edgecolor="k")
-plot(t_x, μ2)
-[ plot(t_x, x2sol, "--") for (x1sol, x2sol) in sols]
-plot(t_x, x2max*ones(size(t_x)), "--r")
-subplot(2,2,3)
-grid(true)
-xlabel(L"t"); ylabel(L"u(t)")
-plot(t_u, usol[1,:])
-
-
-
-
+include("optiPlot.jl")
