@@ -30,20 +30,22 @@ savefig("/home/ws/oz8348/ifac_polychaospaper/optimization.pdf", format="pdf")
 meas_plot1 = Beta01Measure(α[1],β[1])
 meas_plot2 = Beta01Measure(α[2],β[2])
 
-fig2 = figure(2, frameon=true, tight_layout=true, figsize=(3.2, 2.1))
+fig2 = figure(2, frameon=true, tight_layout=true, figsize=(3.3, 1.9))
+subplot(1,2,1)
 xgrid = 0:0.001:1
 plot(xgrid, op_k.measure.w.(xgrid))
 grid(true)
 xlabel(L"\tau"); ylabel(L"\rho(\tau)")
-savefig("/home/ws/oz8348/ifac_polychaospaper/optimizationBetaPDF.pdf", format="pdf")
 
-fig3 = figure(3, frameon=true, tight_layout=true, figsize=(3.2, 1.4))
-subplot(1,2,1)
-grid(true)
-xlabel(L"\tau"); ylabel(L"\rho_1(\tau)")
-plot(xgrid, meas_plot1.w.(xgrid)*w[1])
+function build_myfun(n::Int)
+    t -> evaluate(n, t, op_k)
+end
+
+tspan = 0:0.01:1
 subplot(1,2,2)
 grid(true)
-xlabel(L"\tau"); ylabel(L"\rho_2(\tau)")
-plot(xgrid, meas_plot2.w.(xgrid)*w[2])
-savefig("/home/ws/oz8348/ifac_polychaospaper/optimizationSingleBetaPDFs.pdf", format="pdf")
+xlabel(L"\tau"); ylabel(L"\phi_k(\tau)")
+[ plot(tspan, build_myfun(d).(tspan)) for d in 1:4 ]
+PyPlot.ylim(-0.1, 0.3)
+
+savefig("/home/ws/oz8348/ifac_polychaospaper/optimizationBetaPDF.pdf", format="pdf")
