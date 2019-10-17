@@ -1,6 +1,7 @@
 using 	VanDeVusseUnderUncertainty, JuMP, PolyChaos, LinearAlgebra,
 		Ipopt, Distributions, QuadGK
 
+
 degree = 4
 α, β, w = [2, 4], [4.5, 1.5], [0.3, 0.7]
 
@@ -36,17 +37,6 @@ model = createOptimizationProblem(sys, cost, unc, N, x2max=x2max, λ=λ)
 optimize!(model)
 μ1, σ1, μ2, σ2, usol = getSolution(model, unc)
 
-Nsamples = 20
-samples, Φ = generateSamples(Nsamples, unc)
-
-A11_samples = vec(A[1,1,:]'*Φ)
-x0_samples = x0*Φ
-
-A_realizations = [ [A11 A[1,2,1]; A[2,1,1] A[2,2,1]] for A11 in A11_samples ]
-B_realizations = [ B[:,:,1] for i in 1:Nsamples ]
-x0_realizations = [ Vector(col) for col in eachcol(x0_samples) ]
-
-sols = solveSystemForRealizations(A_realizations, B_realizations, x0_realizations, usol, N)
 
 ##
 include("optiPlot.jl")

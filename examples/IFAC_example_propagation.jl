@@ -48,7 +48,7 @@ t_x = sol.t
 μ1, σ1, μ2, σ2 = getSolution(sol, mop)
 
 # compare against sampled solution
-N_samples = 50
+N_samples = 20
 k1_samples = samplePCE(N_samples, k1, mop)
 k2_samples = samplePCE(N_samples, k2, mop)
 
@@ -60,24 +60,25 @@ end
 deterministic_solutions = solveSystemForRealizations(ODEProblemFunction, k1_samples, k2_samples, 0:Δt:tend)
 
 
-width, height = 1.7, 1.5 # in inches!
+width, height = 3.6, 1.8 # in inches!
 close("all")
 PyPlot.rc("text", usetex=true)
 PyPlot.rc("font", size=9)
 fig1 = figure(1, frameon=true, tight_layout=true, figsize=(width, height))
 # fig1.tight_layout()
+subplot(1,2,1)
 PyPlot.grid(true)
 fill_between(t_x, μ1 + 3*σ1, μ1 - 3*σ1, alpha=0.1, color="k", edgecolor="k")
-[ plot(t_x, x1sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
+[ plot(t_x, x1sol, "--",linewidth=.7) for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ1)
-xlabel(L"t"); ylabel(L"c_{A,1}(t)")
-savefig("/home/ws/oz8348/ifac_polychaospaper/propagation_x1.pdf", format="pdf")
+xlabel(L"t"); ylabel(L"c_{A}(t)")
+#savefig("/home/ws/oz8348/ifac_polychaospaper/propagation_x1.pdf", format="pdf")
 
-fig2 = figure(2, frameon=true, tight_layout=true, figsize=(width, height))
+subplot(1,2,2)
 PyPlot.grid(true)
 fig2.tight_layout()
 fill_between(t_x, μ2 + 3*σ2, μ2 - 3*σ2, alpha=0.1, color="k", edgecolor="k")
-[ plot(t_x, x2sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
+[ plot(t_x, x2sol, "--",linewidth=.7) for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ2)
-xlabel(L"t"); ylabel(L"c_{B,1}(t)")
-savefig("/home/ws/oz8348/ifac_polychaospaper/propagation_x2.pdf", format="pdf")
+xlabel(L"t"); ylabel(L"c_{B}(t)")
+savefig("/home/ws/oz8348/ifac_polychaospaper/propagation.pdf", format="pdf")
