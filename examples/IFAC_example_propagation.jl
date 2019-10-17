@@ -1,4 +1,5 @@
-using VanDeVusseUnderUncertainty, DifferentialEquations, PolyChaos, PyPlot, LaTeXStrings
+using 	VanDeVusseUnderUncertainty, DifferentialEquations,
+		PolyChaos, PyPlot, LaTeXStrings
 
 function ODEdeterministic(du, u, p, t)
 	k_rate, input = p[1], p[2]
@@ -12,16 +13,12 @@ function ODEgalerkin(du, u, p, t)
     du[L+1:end] = [ -x2[k]*p + sum((k1[l]*x1[m]-k2[l]*x2[m])*T3.get([l-1, m-1, k-1])/T2.get([k-1, k-1]) for l in inds, m in inds) for k in inds ]
 end
 
-# find out reference for those numbers --> look up references in Paulson, Streif, Mesbah. "Stability for Receding-horizon Stochastic Model Predictive Control"
-# reaction parameters
-k0 = 1e9*[12.87; 12.87; 9.043]
-T0 = 104.9
-E = [9758.3; 9758.3; 8560]
-k_rate = @. k0 * exp(-E/(T0 + 273.15))
+# reaction parameters taken from
+# Constrained Linear Quadratic Regulation, Pierre O. M. Scokaert and James B. Rawlings
+k_rate = [50; 100; 10 ] 
 # initial condition
 c0 = [0.5; 0.1]
-tend, Δt = 15.0, 0.01
-
+tend, Δt = 0.1, 0.001
 
 prob = ODEProblem(ODEdeterministic, c0, (0, tend), (k_rate, 0.1))
 sol = solve(prob; saveat=0:Δt:tend);
@@ -58,7 +55,6 @@ end
 
 deterministic_solutions = solveSystemForRealizations(ODEProblemFunction, k1_samples, k2_samples, 0:Δt:tend)
 
-
 width, height = 3, 2 # in inches!
 close("all")
 PyPlot.rc("text", usetex=true)
@@ -68,8 +64,8 @@ PyPlot.grid(true)
 fill_between(t_x, μ1 + 3*σ1, μ1 - 3*σ1, alpha=0.1, color="k", edgecolor="k")
 [ plot(t_x, x1sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ1)
-xlabel(L"t"); ylabel(L"c_{A,1}(t)")
-savefig("propagation_x1.svg", format="svg")
+xlabel(L"t"); ylabel(L"c_{A}(t)")
+savefig("propagation_x1.pdf", format="pdf")
 
 fig2 = figure(2, frameon=true, tight_layout=true, figsize=(width, height))
 PyPlot.grid(true)
@@ -77,7 +73,7 @@ fig2.tight_layout()
 fill_between(t_x, μ2 + 3*σ2, μ2 - 3*σ2, alpha=0.1, color="k", edgecolor="k")
 [ plot(t_x, x2sol, "--") for (x1sol, x2sol) in deterministic_solutions ]
 plot(t_x, μ2)
-xlabel(L"t"); ylabel(L"c_{B,1}(t)")
-savefig("propagation_x2.svg", format="svg")
+xlabel(L"t"); ylabel(L"c_{B}(t)")
+savefig("propagation_x2.pdf", format="pdf")
 
 

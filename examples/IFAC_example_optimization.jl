@@ -9,7 +9,7 @@ op_x1 = GaussOrthoPoly(degree; Nrec=2*degree)
 op_x2 = GaussOrthoPoly(degree; Nrec=2*degree)
 mop = MultiOrthoPoly([op_k, op_x1, op_x2], degree)
 unc = Uncertainty(mop)
-L = OptimalControlUnderUncertainty.dim(unc)
+L = VanDeVusseUnderUncertainty.dim(unc)
 lb, ub = 0.923, 0.963
 
 δ, T = 0.002, 0.2
@@ -58,6 +58,7 @@ fill_between(t_x, μ1 + 3*σ1, μ1 - 3*σ1, alpha=0.1, color="k", edgecolor="k")
 plot(t_x, μ1)
 [ plot(t_x, x1sol, "--") for (x1sol, x2sol) in sols]
 xlabel(L"t"); ylabel(L"x_1(t)")
+ylim([0, 0.55])
 subplot(2,2,2)
 grid(true)
 xlabel(L"t"); ylabel(L"x_2(t)")
@@ -65,6 +66,7 @@ fill_between(t_x, μ2 + 3*σ2, μ2 - 3*σ2, alpha=0.1, color="k", edgecolor="k")
 plot(t_x, μ2)
 [ plot(t_x, x2sol, "--") for (x1sol, x2sol) in sols]
 plot(t_x, x2max*ones(size(t_x)), "--r")
+ylim([0, 0.20])
 subplot(2,2,3)
 grid(true)
 xlabel(L"t"); ylabel(L"u(t)")

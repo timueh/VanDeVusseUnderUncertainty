@@ -2,7 +2,8 @@
 
 *This package is work in progress*
 
-This package studies a Van de Vusse reactor under uncertainty. There are two main examples:
+This package studies a Van de Vusse reactor under uncertainty. There are three examples:
+- `IFAC_example_basisConstruction.jl` which constructs the basis for a Beta mixture model,
 - `IFAC_example_propagation.jl` which propagates uncertainties through the system, and
 - `IFAC_example_optimization.jl` which solves an optimal control problem under uncertainty.
 
